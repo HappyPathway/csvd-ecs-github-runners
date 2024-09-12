@@ -12,7 +12,7 @@ module "ecs_cluster_instances" {
       aws_security_group.allow_ssh.id
     ]
   )
-  subnet        = var.subnets
+  subnet        = var.subnets[0]
   ssh_user      = "ec2-user"
   instance_type = "t2.micro"
   ami           = "ami-05c643bcdf4b2ae88"
