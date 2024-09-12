@@ -2,6 +2,45 @@ resource "aws_ecs_cluster" "github-runner" {
   name = var.ecs_cluster_name
 }
 
+
+module "ecs_cluster_instances" {
+  source         = "HappyPathway/instance/aws"
+  instance_count = var.cluster_size
+  security_group_ids = concat(
+    local.vpc_config.security_group_ids,
+    [
+      aws_security_group.allow_ssh.id
+    ]
+  )
+  subnet        = local.vpc_config.subnets[0]
+  ssh_user      = "ec2-user"
+  instance_type = "t2.micro"
+  ami = "ami-03fadeeea589a106b"
+  required_tags = {
+    Name = aws_ecs_cluster.github-runner.name
+  }
+  root_block_device = {
+    volume_size = 100
+  }
+  ebs_block_devices = [
+    {
+      device_name           = "/dev/sdb"
+      volume_size           = 100
+      volume_type           = "gp2"
+      delete_on_termination = true
+    }
+  ]
+  troubleshoot     = false
+  project_name     = var.namespace
+  windows_instance = false
+  iam_policy       = data.aws_iam_policy_document.admin.json
+  store_key        = true
+  secret_path      = "/ssh-keys/sandbox-instances/arnol377"
+  config = {
+    src = 
+}
+
+
 locals {
   labels = [
     "self-hosted",
@@ -19,10 +58,15 @@ module "github-runner" {
   repo_org      = var.repo_org
   repo_name     = each.value.repo_name
   namespace     = var.namespace
+  runner_group  = each.value.runner_group
   runner_labels = lookup(each.value, "labels", local.labels)
-  subnets       = lookup(each.value, "subnets", var.subnets)
-  tag           = lookup(each.value, "tag", "github-runner")
-  depends_on    = [
+  network_configuration = {
+    subnets          = lookup(each.value, "subnets", var.subnets),
+    security_groups  = lookup(each.value, "security_groups", var.security_groups)
+    assign_public_ip = lookup(each.value, "assign_public_ip", var.assign_public_ip)
+  }
+  tag = lookup(each.value, "tag", "github-runner")
+  depends_on = [
     aws_ecs_cluster.github-runner
   ]
 }

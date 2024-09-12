@@ -16,6 +16,23 @@ variable "github_runners" {
     labels    = optional(list(string))
     subnets   = optional(list(string))
     tag       = optional(string)
+
+    network_configuration = optional(object({
+      subnets          = optional(list(string), []),
+      security_groups  = optional(list(string), []),
+      assign_public_ip = optional(bool, false)
+      }), {}
+    )
+
+    runner_group = optional(object({
+      name                       = optional(string)
+      visibility                 = optional(string, "selected")
+      selected_workflows         = optional(list(string), [])
+      selected_repository_ids    = optional(list(string), [])
+      allows_public_repositories = optional(bool, false)
+      create                     = optional(bool, false)
+    }), { create = false })
+    # end of variable definition
   }))
 
   validation {
@@ -47,9 +64,24 @@ variable "namespace" {
 variable "subnets" {
   description = "A list of subnets"
   type        = list(string)
-
+  default     = []
   validation {
-    condition     = length(var.subnets) > 0
+    condition     = length(var.subnets) >= 0
     error_message = "The list of subnets must not be empty."
   }
+}
+
+variable "security_groups" {
+  description = "A list of security groups"
+  type        = list(string)
+  default     = []
+  validation {
+    condition     = length(var.security_groups) >= 0
+    error_message = "The list of security groups must not be empty."
+  }
+}
+
+variable "assign_public_ip" {
+  default = false
+  type    = bool
 }
