@@ -12,10 +12,10 @@ module "ecs_cluster_instances" {
       aws_security_group.allow_ssh.id
     ]
   )
-  subnet        = local.vpc_config.subnets[0]
+  subnet        = var.subnets
   ssh_user      = "ec2-user"
   instance_type = "t2.micro"
-  ami = "ami-05c643bcdf4b2ae88"
+  ami           = "ami-05c643bcdf4b2ae88"
   required_tags = {
     Name = aws_ecs_cluster.github-runner.name
   }
@@ -38,11 +38,11 @@ module "ecs_cluster_instances" {
   secret_path      = "/ssh-keys/sandbox-instances/arnol377"
   config = {
     content = templatefile("${path.root}/ecs_cluster_init.sh",
-    {
-      cluster_name = aws_ecs_cluster.github-runner.name
+      {
+        cluster_name = aws_ecs_cluster.github-runner.name
     }),
     script = "/opt/config.sh"
-    args = ""
+    args   = ""
   }
   depends_on = [
     aws_ecs_cluster.github-runner

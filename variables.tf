@@ -85,3 +85,7 @@ variable "assign_public_ip" {
   default = false
   type    = bool
 }
+
+variable "cluster_size" {
+  default = 3
+}
