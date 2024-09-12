@@ -1,0 +1,36 @@
+# The name of the ECS cluster
+ecs_cluster_name = "value"
+
+# A list of GitHub runners with their configurations
+github_runners = [{
+  # The hostname for the GitHub runner
+  hostname = "value"
+
+  # Labels to assign to the GitHub runner
+  labels = [
+    "value"
+  ]
+
+  # The repository name for the GitHub runner
+  repo_name = "value"
+
+  # Subnets where the GitHub runner will be deployed
+  # if specified, the GitHub runner will be deployed in the specified subnets and will override the global subnets
+  subnets = [
+    "value"
+  ]
+
+  # Tag to assign to the GitHub runner
+  tag = "value"
+}]
+
+# The namespace for the resources
+namespace = "value"
+
+# The GitHub organization
+repo_org = "value"
+
+# A list of subnets
+subnets = [
+  "value"
+]
