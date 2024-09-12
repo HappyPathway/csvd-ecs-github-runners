@@ -3,11 +3,51 @@ resource "aws_ecs_cluster" "github-runner" {
 }
 
 
+data "aws_iam_policy_document" "admin" {
+  statement {
+    sid = "1"
+
+    actions = [
+      "*"
+    ]
+
+    resources = [
+      "*",
+    ]
+  }
+}
+
+
+resource "aws_security_group" "allow_ssh" {
+  name        = "ssh-access-ecs-instances-${var.namespace}"
+  description = "Security group to allow SSH from everywhere"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "allow_ssh"
+  }
+}
+
+
 module "ecs_cluster_instances" {
   source         = "HappyPathway/instance/aws"
   instance_count = var.cluster_size
   security_group_ids = concat(
-    local.vpc_config.security_group_ids,
+    var.security_groups,
     [
       aws_security_group.allow_ssh.id
     ]
@@ -35,7 +75,7 @@ module "ecs_cluster_instances" {
   windows_instance = false
   iam_policy       = data.aws_iam_policy_document.admin.json
   store_key        = true
-  secret_path      = "/ssh-keys/sandbox-instances/arnol377"
+  secret_path      = "/ssh-keys/ecs-clusters/${var.namespace}"
   config = {
     content = templatefile("${path.root}/ecs_cluster_init.sh",
       {

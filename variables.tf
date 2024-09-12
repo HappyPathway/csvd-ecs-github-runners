@@ -89,3 +89,5 @@ variable "assign_public_ip" {
 variable "cluster_size" {
   default = 3
 }
+
+variable vpc_id {}
