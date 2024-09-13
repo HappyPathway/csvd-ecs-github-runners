@@ -1,0 +1,11 @@
+[
+    {
+        "name": "csvd-ghe-runner",
+        "image": "229685449397.dkr.ecr.us-gov-west-1.amazonaws.com/docker-image-pipeline/github-runner:1.22.33",
+        "essential": true,
+        "cpu": 2048,
+        "memory": 4096,
+        "environment": [{"name":"ACCESS_TOKEN_SECRET_PATH","value":"/github-runners/csvd-ghe-runner/csvd-gh-runner"},{"name":"HOSTNAME","value":"csvd-gh-runner"},{"name":"NAMESPACE","value":"csvd-ghe-runner"},{"name":"REPO_URL","value":"https://github.e.it.census.gov/CSVD/automation-repos"},{"name":"RUNNER_LABELS","value":"automation-repos,ecs-github-runner"}],
+        "logConfiguration": {"logDriver":"awslogs","options":{"awslogs-group":"/ecs-ghe-runners/csvd-ghe-runner","awslogs-region":"us-gov-west-1","awslogs-stream-prefix":"ghe-runner"}}
+    }
+]

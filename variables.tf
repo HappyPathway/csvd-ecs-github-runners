@@ -90,4 +90,9 @@ variable "cluster_size" {
   default = 3
 }
 
-variable vpc_id {}
+variable "vpc_id" {}
+
+variable create_vpc_endpoint {
+  type = bool
+  default = false
+}
