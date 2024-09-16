@@ -12,6 +12,7 @@ variable "github_runners" {
   description = "A list of GitHub runners"
   type = list(object({
     hostname  = string
+    namespace = optional(string, null)
     repo_name = optional(string, null)
     labels    = optional(list(string))
     subnets   = optional(list(string))
@@ -92,7 +93,10 @@ variable "cluster_size" {
 
 variable "vpc_id" {}
 
-variable create_vpc_endpoint {
-  type = bool
+variable "create_vpc_endpoint" {
+  type    = bool
   default = false
 }
+
+variable "image_name" {}
+variable "image_version" {}

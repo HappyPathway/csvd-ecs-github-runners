@@ -42,26 +42,44 @@ locals {
   ]
 }
 
+data aws_caller_identity current {}
+
+resource "aws_cloudwatch_log_group" "function_log_group" {
+  name              = "/ecs-ghe-runners/${data.aws_caller_identity.current.account_id}-${data.aws_region.current.name}"
+  retention_in_days = 90
+}
+
 module "github-runner" {
   for_each      = tomap({ for runner in var.github_runners : runner.hostname => runner })
   source        = "HappyPathway/github-runner/ecs"
   ecs_cluster   = aws_ecs_cluster.github-runner.name
   hostname      = each.value.hostname
-  image         = "229685449397.dkr.ecr.us-gov-west-1.amazonaws.com/docker-image-pipeline/github-runner:1.22.33"
+  image         = "229685449397.dkr.ecr.us-gov-west-1.amazonaws.com/docker-image-pipeline/${var.image_name}:${var.image_version}"
   repo_org      = var.repo_org
   repo_name     = each.value.repo_name
-  namespace     = var.namespace
+  namespace     = "${data.aws_caller_identity.current.account_id}-${data.aws_region.current.name}"
+  log_group     = aws_cloudwatch_log_group.function_log_group.name
   runner_group  = each.value.runner_group
-  runner_labels = lookup(each.value, "labels", local.labels)
+  runner_labels = [
+    each.value.hostname,
+    "${data.aws_caller_identity.current.account_id}-${data.aws_region.current.name}",
+    data.aws_caller_identity.current.account_id,
+    data.aws_region.current.name,
+    "ecs-github-runner"
+  ]
+  certs = {
+    bucket = "image-pipeline-assets"
+    key    = "katello-server-ca.pem"
+  }
   network_configuration = {
-    subnets          = coalescelist(
-			lookup(each.value, "subnets", var.subnets),
-			var.subnets
-		       )
-    security_groups  = coalescelist(
-			lookup(each.value, "security_groups", var.security_groups),
-			var.security_groups
-                       )
+    subnets = coalescelist(
+      lookup(each.value, "subnets", var.subnets),
+      var.subnets
+    )
+    security_groups = coalescelist(
+      lookup(each.value, "security_groups", var.security_groups),
+      var.security_groups
+    )
     assign_public_ip = lookup(each.value, "assign_public_ip", var.assign_public_ip)
   }
   tag = lookup(each.value, "tag", "github-runner")
