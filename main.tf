@@ -67,10 +67,7 @@ module "github-runner" {
     data.aws_region.current.name,
     "ecs-github-runner"
   ]
-  certs = {
-    bucket = "image-pipeline-assets"
-    key    = "katello-server-ca.pem"
-  }
+  certs = var.certs
   network_configuration = {
     subnets = coalescelist(
       lookup(each.value, "subnets", var.subnets),
