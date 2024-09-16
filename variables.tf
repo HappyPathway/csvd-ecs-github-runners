@@ -100,3 +100,11 @@ variable "create_vpc_endpoint" {
 
 variable "image_name" {}
 variable "image_version" {}
+
+variable certs {
+  type = object({
+    bucket = string
+    key    = string
+  })
+  default = null
+}
