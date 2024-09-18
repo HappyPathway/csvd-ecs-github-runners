@@ -45,7 +45,7 @@ locals {
 data aws_caller_identity current {}
 
 resource "aws_cloudwatch_log_group" "function_log_group" {
-  name              = "/ecs-ghe-runners/${data.aws_caller_identity.current.account_id}-${data.aws_region.current.name}"
+  name              = "/ecs-ghe-runners/${terraform.workspace}-${data.aws_caller_identity.current.account_id}-${data.aws_region.current.name}"
   retention_in_days = 90
 }
 
@@ -57,9 +57,10 @@ module "github-runner" {
   image         = "229685449397.dkr.ecr.us-gov-west-1.amazonaws.com/docker-image-pipeline/${var.image_name}:${var.image_version}"
   repo_org      = var.repo_org
   repo_name     = each.value.repo_name
-  namespace     = "${data.aws_caller_identity.current.account_id}-${data.aws_region.current.name}"
+  namespace     = "${terraform.workspace}-${data.aws_caller_identity.current.account_id}-${data.aws_region.current.name}"
   log_group     = aws_cloudwatch_log_group.function_log_group.name
   runner_group  = each.value.runner_group
+  server_url    = var.server_url
   runner_labels = [
     each.value.hostname,
     "${data.aws_caller_identity.current.account_id}-${data.aws_region.current.name}",

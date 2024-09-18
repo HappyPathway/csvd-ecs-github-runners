@@ -100,3 +100,7 @@ variable "create_vpc_endpoint" {
 
 variable "image_name" {}
 variable "image_version" {}
+
+variable server_url {
+  default = ""
+}
