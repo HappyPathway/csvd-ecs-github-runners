@@ -17,6 +17,11 @@ security_groups = [
   "sg-0641c697588b9aa6b"
 ]
 
+certs = {
+  bucket = "image-pipeline-assets"
+  key    = "katello-server-ca.pem"
+}
+
 github_runners = [
 {
   hostname = "automation-repos"

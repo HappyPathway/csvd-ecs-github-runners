@@ -104,3 +104,11 @@ variable "image_version" {}
 variable server_url {
   default = ""
 }
+
+variable certs {
+  type = object({
+    bucket = string
+    key    = string
+  })
+  default = null
+}
