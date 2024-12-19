@@ -23,29 +23,5 @@ certs = {
 }
 
 github_runners = [
-{
-  hostname = "automation-repos"
-  labels = [
-    "automation-repos",
-    "ecs-github-runner"
-  ]
-  repo_name = "automation-repos"
-  tag       = "ghe-runner"
-  runner_group = {
-    create = false
-  }
-},
-{
-  hostname = "aws-image-pipeline"
-  labels = [
-    "automation-repos",
-    "ecs-github-runner"
-  ]
-  repo_name = "aws-image-pipeline"
-  tag       = "ghe-runner"
-  runner_group = {
-    create = false
-  }
-}
 ]
 

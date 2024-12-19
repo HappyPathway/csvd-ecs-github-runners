@@ -35,11 +35,6 @@ variable "github_runners" {
     }), { create = false })
     # end of variable definition
   }))
-
-  validation {
-    condition     = length(var.github_runners) > 0
-    error_message = "The list of GitHub runners must not be empty."
-  }
 }
 
 variable "repo_org" {
